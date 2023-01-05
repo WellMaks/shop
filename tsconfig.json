@@ -22,7 +22,9 @@
     "pages/api/getUserSessionId.tsx",
     "pages/api/getUserInfo.jsx",
     "pages/_app.jsx",
-    "pages/index.jsx"
+    "pages/index.tsx",
+    "components/localstorage.jsx",
+    "components/Session.jsx"
   ],
   "exclude": ["node_modules"]
 }

@@ -2,6 +2,11 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "../../../components/prisma";
 import { NextAuthOptions } from "next-auth";
+import { useEffect, useState } from "react";
+
+type UserData = {
+  name: string;
+};
 
 const authOptions: NextAuthOptions = {
   session: {
@@ -34,8 +39,8 @@ const authOptions: NextAuthOptions = {
             return null;
           }
         }
+
         return {
-          id: USER?.id,
           name: USER?.id,
           email: USER?.email,
           image: USER?.avatar,

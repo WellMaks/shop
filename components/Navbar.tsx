@@ -3,6 +3,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const Navbar = () => {
+  const data = localStorage.getItem("suckDickDeepShit");
   const { data: session } = useSession();
   const router = useRouter();
   // console.log(session);
@@ -49,7 +50,6 @@ const Navbar = () => {
                 Register
               </a>
             </Link>
-            TypeError: Cannot read properties of null (reading 'useContext')
           </>
         )}
       </div>
