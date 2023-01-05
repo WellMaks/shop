@@ -28,23 +28,26 @@ const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials, req) {
-        const USER = await prisma.user.findUnique({
-          where: {
-            email: credentials?.username,
-          },
-        });
+        try {
+          const USER = await prisma.user.findUnique({
+            where: {
+              email: credentials?.username,
+            },
+          });
 
-        if (USER) {
-          if (credentials?.password != USER.password) {
+          if (USER) {
+            if (credentials?.password == USER.password) {
+              return {
+                name: USER?.id,
+                email: USER?.email,
+                image: USER?.avatar,
+              };
+            }
             return null;
           }
+        } catch (e: any) {
+          return null;
         }
-
-        return {
-          name: USER?.id,
-          email: USER?.email,
-          image: USER?.avatar,
-        };
       },
     }),
   ],

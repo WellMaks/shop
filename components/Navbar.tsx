@@ -3,10 +3,18 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const Navbar = () => {
-  const data = localStorage.getItem("suckDickDeepShit");
+  let data, role: string;
+  let admin = false;
   const { data: session } = useSession();
   const router = useRouter();
-  // console.log(session);
+  if (session) {
+    data = JSON.parse(localStorage.getItem("suckDickDeepShit")!);
+    role = data.role;
+    console.log(role);
+    if (role == "ADMIN") {
+      admin = true;
+    }
+  }
   return (
     <nav className="font-sans flex flex-col text-center sm:flex-row sm:text-left sm:justify-between py-4 px-6 bg-white shadow sm:items-baseline w-full ">
       <Link href="/" legacyBehavior className="mb-2 sm:mb-0">
@@ -19,6 +27,19 @@ const Navbar = () => {
           <a className="text-lg no-underline text-grey-darkest ml-2">
             Welcome, {session?.user?.name}!
           </a>
+        ) : (
+          ""
+        )}
+        {session ? (
+          admin ? (
+            <Link href="/adminPage" legacyBehavior>
+              <a className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2 pr-4">
+                Admin Panel
+              </a>
+            </Link>
+          ) : (
+            ""
+          )
         ) : (
           ""
         )}
