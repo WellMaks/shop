@@ -8,9 +8,13 @@ const Navbar = () => {
   const { data: session } = useSession();
   const router = useRouter();
   if (session) {
-    data = JSON.parse(localStorage.getItem("suckDickDeepShit")!);
-    role = data.role;
-    console.log(role);
+    try {
+      data = JSON.parse(localStorage.getItem("suckDickDeepShit")!);
+      role = data.role;
+    } catch (e) {
+      role = "DEFAULT";
+    }
+
     if (role == "ADMIN") {
       admin = true;
     }
@@ -79,37 +83,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-// {session ? (
-//   <ul>
-//     <li>
-//       <a>Welcome, {session.user.name}!</a>
-//       <Link href="/" legacyBehavior>
-//         <a
-//           onClick={() => {
-//             signOut();
-//           }}
-//         >
-//           Log out
-//         </a>
-//       </Link>
-//     </li>
-//   </ul>
-// ) : (
-//   <ul>
-//     <li>
-//       <Link href="/api/auth/signin" legacyBehavior>
-//         <a
-//           onClick={() => {
-//             signIn();
-//           }}
-//         >
-//           Log In
-//         </a>
-//       </Link>
-//     </li>
-//     {/* <li>
-//       <Link>Register</Link>
-//     </li> */}
-//   </ul>
-// )}
