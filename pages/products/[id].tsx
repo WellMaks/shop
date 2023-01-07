@@ -6,19 +6,18 @@ import getStripe from "../../components/GetStripe";
 const ProductPage = (props: { product: any }) => {
   const handleCheckout = async () => {
     const stripe = await getStripe();
-    const Product = props.product;
-    const response = await fetch("/api/checkout_session/stripe", {
+    const response = await fetch("/api/stripe", {
       method: "POST",
       headers: {
-        "Content-Type": "applications/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(Product),
+      body: JSON.stringify(props.product),
     });
 
-    // if (response.status === 500) return;
+    if (response.status === 500) return;
 
     const data = await response.json();
-    stripe?.redirectToCheckout({ sessionId: data.id });
+    stripe!.redirectToCheckout({ sessionId: data.id });
   };
 
   return (
@@ -42,18 +41,14 @@ const ProductPage = (props: { product: any }) => {
             ${props.product.price}
           </span>
         </div>
-        <Link
-          legacyBehavior
-          href="/checkout"
-          as={`/checkout/${props.product.id}`}
-        >
+        <button>
           <a
             className="inline-block py-3 px-6 bg-blue-500 rounded-full text-sm font-semibold text-white hover:bg-blue-700"
             onClick={handleCheckout}
           >
             Buy Now
           </a>
-        </Link>
+        </button>
       </div>
     </div>
   );
