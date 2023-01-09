@@ -44,4 +44,5 @@ model Commands {
   command_id Int  @id @default(autoincrement())
   user_id    Int
   product    Json
+  status String
 }

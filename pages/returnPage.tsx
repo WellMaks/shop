@@ -7,7 +7,7 @@ async function returnPage() {
     },
   });
   // return posts;
-  return posts.map((post) => {
+  return posts.map((post: any) => {
     return {
       params: {
         id: post.product_id.toString(),

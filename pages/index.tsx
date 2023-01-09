@@ -9,21 +9,13 @@ import "tailwindcss/tailwind.css";
 
 const Home = (props: { data: any }) => {
   const [userInfo, setUserInfo] = useState<any>(props.data);
-  const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
+
   const session = useSession();
   const href = session.status == "unauthenticated" ? "/" : "shop";
 
   useEffect(() => {
     localStorage.setItem("suckDickDeepShit", userInfo);
   }, [userInfo]);
-
-  useEffect(() => {
-    // Check if the payment was successful by checking the URL query parameters
-    const queryParams = new URLSearchParams(window.location.search);
-    if (queryParams.get("success") === "true") {
-      setIsPaymentSuccess(true);
-    }
-  }, []);
 
   return (
     <>
