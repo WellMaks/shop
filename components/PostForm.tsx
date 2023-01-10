@@ -1,6 +1,11 @@
 import Image from "next/image";
 
-function PostForm(props: { post: any }) {
+interface HeaderProps {
+  post: any;
+  status?: string;
+}
+
+function PostForm(props: HeaderProps) {
   return (
     <div className="my-8max-w-sm rounded overflow-hidden shadow-lg hover:-translate-y-1 duration-300">
       <img
@@ -15,9 +20,21 @@ function PostForm(props: { post: any }) {
         <p className="text-gray-700 text-base">{props.post.description}</p>
       </div>
       <div className="px-6 pt-4 pb-2">
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-          Price: {props.post.price}
-        </span>
+        {props.post.price ? (
+          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+            Price: {props.post.price}
+          </span>
+        ) : (
+          ""
+        )}
+
+        {props.status ? (
+          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+            Status: {props.status}
+          </span>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );
