@@ -9,17 +9,6 @@ async function requireAuth(context: any, cb: any) {
         permanent: false,
       },
     };
-  } else {
-    const data = JSON.parse(localStorage.getItem("suckDickDeepShit")!);
-    const role = data.role;
-    if (role !== "ADMIN") {
-      return {
-        redirect: {
-          destination: "/",
-          permanent: false,
-        },
-      };
-    }
   }
   return cb({ session });
 }

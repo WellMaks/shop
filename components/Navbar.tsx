@@ -1,40 +1,44 @@
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import cookie from "cookie";
+import { useEffect, useState } from "react";
 
-const Navbar = () => {
+export async function getInitialProps(context: any) {
+  const cookies = cookie.parse(context.req.headers.cookie)
+    ? cookie.parse(context.req.headers.cookie)
+    : null;
+  return { props: { cookies } };
+}
+
+const Navbar = (props: any) => {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  console.log(props);
+  useEffect(() => {
+    if (props.token !== null) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   let data, role: string;
   let admin = false;
-  const { data: session } = useSession();
-  const router = useRouter();
-  if (session) {
-    try {
-      data = JSON.parse(localStorage.getItem("suckDickDeepShit")!);
-      role = data.role;
-    } catch (e) {
-      role = "DEFAULT";
-    }
 
-    if (role == "ADMIN") {
-      admin = true;
-    }
-  }
   return (
     <nav className="font-sans flex flex-col text-center sm:flex-row sm:text-left sm:justify-between py-4 px-6 bg-white shadow sm:items-baseline w-full ">
       <Link href="/" legacyBehavior className="mb-2 sm:mb-0">
         <a className="text-2xl no-underline text-grey-darkest hover:text-blue-dark">
-          Home
+          Home, {isLoggedIn == false ? "not logged" : " logged"}
         </a>
       </Link>
       <div>
-        {session ? (
+        {isLoggedIn ? (
           <a className="text-lg no-underline text-grey-darkest ml-2">
-            Welcome, {session?.user?.name}!
+            Welcome, {props.token}!
           </a>
         ) : (
           ""
         )}
-        {session ? (
+        {isLoggedIn ? (
           admin ? (
             <Link href="/adminPage" legacyBehavior>
               <a className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2 pr-4">
@@ -47,12 +51,19 @@ const Navbar = () => {
         ) : (
           ""
         )}
-        {session ? (
+        {isLoggedIn ? (
           <Link href="/" legacyBehavior>
             <a
               className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2 "
               onClick={() => {
-                signOut();
+                setIsLoggedIn(false);
+                fetch("/api/logout", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({}),
+                });
               }}
             >
               Log out
@@ -60,13 +71,8 @@ const Navbar = () => {
           </Link>
         ) : (
           <>
-            <Link href="/api/auth/signin" legacyBehavior>
-              <a
-                className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2 pr-4"
-                onClick={() => {
-                  signIn();
-                }}
-              >
+            <Link href="/loginPage" legacyBehavior>
+              <a className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2 pr-4">
                 LogIn
               </a>
             </Link>
