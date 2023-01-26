@@ -2,15 +2,14 @@ import { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 import PostForm from "../components/PostForm";
 import "tailwindcss/tailwind.css";
+import { prisma } from "../components/prisma";
+import { useAppSelector } from "../store/store";
+import jwt from "jsonwebtoken";
+import { getCookie } from "cookies-next";
 
-const Home = (props: { data: any; products: any }) => {
-  const [userInfo, setUserInfo] = useState<any>(props.data);
+const Home = (props: { products: any }) => {
   const href = "/";
-
-  // useEffect(() => {
-  //   localStorage.setItem("suckDickDeepShit", userInfo);
-  // }, [userInfo]);
-
+  console.log(props.products);
   if (props.products) {
     const products = JSON.parse(props.products);
     return (
@@ -50,15 +49,7 @@ const Home = (props: { data: any; products: any }) => {
     <>
       <div className=" py-10 px-12">
         <div className="grid grid-flow-row gap-8 text-neutral-600 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <Link
-            href={href}
-            // onClick={() => {
-            //   if (session.status == "unauthenticated") {
-            //     signIn();
-            //   } else {
-            //   }
-            // }}
-          >
+          <Link href={href} onClick={() => {}}>
             <PostForm
               post={{
                 title: "Add Post",
@@ -74,7 +65,9 @@ const Home = (props: { data: any; products: any }) => {
 };
 
 // export async function getServerSideProps(context: any) {
-//   const session = await getSession(context);
+//   // const session = token;
+//   const session = getCookie("token") ? true : false;
+//   const token: any = getCookie("token") ? {} : "";
 //   if (!session) {
 //     return {
 //       props: {
@@ -82,16 +75,8 @@ const Home = (props: { data: any; products: any }) => {
 //       },
 //     };
 //   } else {
-//     var USER;
-//     var a: string;
-
-//     a = session?.user?.name!;
-
-//     USER = await prisma.user.findUnique({
-//       where: {
-//         id: parseInt(a),
-//       },
-//     });
+//     var a: any;
+//     a = token?.USER.id;
 
 //     const result = await prisma.commands.findMany({
 //       where: {
@@ -101,7 +86,6 @@ const Home = (props: { data: any; products: any }) => {
 
 //     return {
 //       props: {
-//         data: JSON.stringify(USER),
 //         products: result ? JSON.stringify(result) : null,
 //       },
 //     };

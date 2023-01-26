@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import cookie from "cookie";
-
-export async function getServerSideProps(context: any) {
-  const cookies = cookie.parse(context.req.headers.cookie)
-    ? cookie.parse(context.req.headers.cookie)
-    : null;
-  return { props: cookies };
-}
+import { saveToken } from "../components/SaveToken";
+import { getToken, isTokenExist } from "../components/GetToken";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../store/action-creators";
+import { useAppDispatch, useAppSelector } from "../store/store";
+import { getCookie, setCookies } from "cookies-next";
 
 const LoginPage = (props: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [data, setData] = useState(false);
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const isLoggedIn = useAppSelector((state: any) => state.isLoggedIn);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -30,7 +31,9 @@ const LoginPage = (props: any) => {
       }
 
       const { token } = await res.json();
-      console.log(token);
+      // saveToken(token);
+      setCookies("token", token);
+      dispatch(loginUser(token));
       router.push("/");
     } catch (err: any) {
       setError(err.message);
@@ -38,12 +41,13 @@ const LoginPage = (props: any) => {
   };
 
   useEffect(() => {
-    if (props.token) {
+    if (isLoggedIn) {
+      setData(true);
       router.push("/");
     }
   }, []);
 
-  if (!props.token) {
+  if (!data) {
     return (
       <div>
         <form className="bg-white p-6 rounded-lg" onSubmit={handleSubmit}>

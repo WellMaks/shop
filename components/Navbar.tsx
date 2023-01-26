@@ -1,27 +1,15 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import cookie from "cookie";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { logoutUser } from "../store/action-creators";
+import { useAppDispatch, useAppSelector } from "../store/store";
+import jwt from "jsonwebtoken";
 
-export async function getInitialProps(context: any) {
-  const cookies = cookie.parse(context.req.headers.cookie)
-    ? cookie.parse(context.req.headers.cookie)
-    : null;
-  return { props: { cookies } };
-}
-
-const Navbar = (props: any) => {
-  const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  console.log(props);
-  useEffect(() => {
-    if (props.token !== null) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  let data, role: string;
-  let admin = false;
+const Navbar = () => {
+  const dispatch = useAppDispatch();
+  const isLoggedIn = useAppSelector((state: any) => state.isLoggedIn);
+  const getToken = useAppSelector((state: any) => state.token);
+  const token: any = jwt.decode(getToken);
 
   return (
     <nav className="font-sans flex flex-col text-center sm:flex-row sm:text-left sm:justify-between py-4 px-6 bg-white shadow sm:items-baseline w-full ">
@@ -33,13 +21,13 @@ const Navbar = (props: any) => {
       <div>
         {isLoggedIn ? (
           <a className="text-lg no-underline text-grey-darkest ml-2">
-            Welcome, {props.token}!
+            Welcome, {token?.USER.username}!
           </a>
         ) : (
           ""
         )}
         {isLoggedIn ? (
-          admin ? (
+          token?.USER.role == "ADMIN" ? (
             <Link href="/adminPage" legacyBehavior>
               <a className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2 pr-4">
                 Admin Panel
@@ -56,14 +44,7 @@ const Navbar = (props: any) => {
             <a
               className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2 "
               onClick={() => {
-                setIsLoggedIn(false);
-                fetch("/api/logout", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({}),
-                });
+                dispatch(logoutUser());
               }}
             >
               Log out
