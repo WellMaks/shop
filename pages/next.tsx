@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAppSelector } from "../store/store";
+import { getCookie } from "cookies-next";
+import jwt from "jsonwebtoken";
+
 const stripe = require("stripe")(
   `${process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY}`
 );
 
-export default function Success({ order }: { order: any }) {
+export default function Success({ order, id }: { order: any; id: any }) {
   async function saveProduct() {
-    const data = JSON.parse(localStorage.getItem("suckDickDeepShit")!);
-
     const response = await fetch("/api/saveProduct", {
       method: "POST",
-      // body: JSON.stringify(req.body),
       body: JSON.stringify({
-        user_id: data.id,
+        user_id: id,
         product: JSON.parse(order.metadata.data),
         status: "Package preparing",
       }),
@@ -21,13 +22,21 @@ export default function Success({ order }: { order: any }) {
     return await response.json();
   }
 
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    if (query.get("success") && localStorage.getItem("saved") != "yes") {
+      saveProduct();
+      localStorage.setItem("saved", "yes");
+    }
+  });
+
   return (
     <div>
       Success!
       <br />
       <Link href="/">
         <b>
-          <button onClick={saveProduct}>Go back to home</button>
+          <button>Go back to home</button>
         </b>
       </Link>
     </div>
@@ -35,9 +44,13 @@ export default function Success({ order }: { order: any }) {
 }
 
 export async function getServerSideProps(params: any) {
+  const session: any = getCookie("token", params);
+  const token: any = jwt.decode(session);
+  const id = token.USER.id;
+
   const order = await stripe.checkout.sessions.retrieve(
     params.query.session_id
   );
 
-  return { props: { order } };
+  return { props: { order, id } };
 }

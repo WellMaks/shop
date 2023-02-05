@@ -1,5 +1,4 @@
 import Stripe from "stripe";
-import { prisma } from "../../components/prisma";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
   apiVersion: "2022-11-15",
@@ -7,8 +6,6 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
 
 export default async function handler(req: any, res: any) {
   if (req.method === "POST") {
-    // console.log(req.body);
-
     try {
       const product = req.body;
       const params = {
@@ -36,21 +33,12 @@ export default async function handler(req: any, res: any) {
           },
         ],
 
-        success_url: `${req.headers.origin}/next?&session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${req.headers.origin}/next?success=true&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.headers.origin}/?canceled=true`,
       } as any;
       // Create Checkout Sessions from body params.
       const session = await stripe.checkout.sessions.create(params);
       res.status(200).json(session);
-
-      const paymentIntent = await stripe.paymentIntents.retrieve(
-        session.payment_intent as string
-      );
-
-      // Check if the payment was successful
-      if (paymentIntent.status === "succeeded") {
-        // Execute logic here, such as saving the payment to your database or sending an email confirmation
-      }
     } catch (err: any) {
       res.status(err.statusCode || 500).json(err.message);
     }

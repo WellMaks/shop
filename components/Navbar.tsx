@@ -1,21 +1,28 @@
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState, useContext } from "react";
 import { logoutUser } from "../store/action-creators";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import jwt from "jsonwebtoken";
+import { getCookie } from "cookies-next";
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
-  const isLoggedIn = useAppSelector((state: any) => state.isLoggedIn);
+  // const isLoggedIn = useAppSelector((state: any) => state.isLoggedIn);
   const getToken = useAppSelector((state: any) => state.token);
   const token: any = jwt.decode(getToken);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    if (getCookie("token")) {
+      setIsLoggedIn(true);
+    }
+  });
 
   return (
     <nav className="font-sans flex flex-col text-center sm:flex-row sm:text-left sm:justify-between py-4 px-6 bg-white shadow sm:items-baseline w-full ">
       <Link href="/" legacyBehavior className="mb-2 sm:mb-0">
         <a className="text-2xl no-underline text-grey-darkest hover:text-blue-dark">
-          Home, {isLoggedIn == false ? "not logged" : " logged"}
+          Home
         </a>
       </Link>
       <div>
@@ -45,6 +52,7 @@ const Navbar = () => {
               className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2 "
               onClick={() => {
                 dispatch(logoutUser());
+                setIsLoggedIn(false);
               }}
             >
               Log out
@@ -68,5 +76,18 @@ const Navbar = () => {
     </nav>
   );
 };
+
+// export async function getServerSideProps(params: any) {
+//   const session: any = getCookie("token", params);
+//   if(session){
+//     const token: any = jwt.decode(session);
+//     const id = token.USER.id;
+
+//     return { props: { isLoggedIn: true } };
+//   }else{
+//     return { props: { isLoggedIn: false } };
+//   }
+
+// }
 
 export default Navbar;

@@ -15,5 +15,3 @@ export const logoutUser = () => async (dispatch: AppDispatch) => {
 export const checkLogin = (token: any) => async (dispatch: AppDispatch) => {
   dispatch(restoreAuthState(token));
 };
-
-export const getLoggedInState = (state: RootState) => state.isLoggedIn;

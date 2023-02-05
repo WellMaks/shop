@@ -1,4 +1,3 @@
-import { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 import PostForm from "../components/PostForm";
 import "tailwindcss/tailwind.css";
@@ -9,12 +8,11 @@ import { getCookie } from "cookies-next";
 
 const Home = (props: { products: any }) => {
   const isLoggedIn = useAppSelector((state: any) => state.isLoggedIn);
-
   const href = isLoggedIn ? "/shop" : "/loginPage";
-  // if (props.products !== null) {}
-
-  const products = props.products ? true : false;
-  // console.log(products);
+  const products = props.products === null ? false : true;
+  if (isLoggedIn) {
+    localStorage.setItem("saved", "no");
+  }
   return (
     <>
       <div className=" py-10 px-12">
@@ -29,7 +27,7 @@ const Home = (props: { products: any }) => {
             />
           </Link>
 
-          {products && props.products.length ? (
+          {products && props.products ? (
             props.products.map((product: any) => (
               <PostForm
                 post={product.product}
@@ -47,10 +45,7 @@ const Home = (props: { products: any }) => {
 };
 
 export async function getServerSideProps(context: any) {
-  const session: any = getCookie("token");
-  console.log(session);
-  console.log("session");
-
+  const session: any = getCookie("token", context);
   if (!session) {
     return {
       props: {
@@ -59,17 +54,15 @@ export async function getServerSideProps(context: any) {
     };
   } else {
     const token: any = jwt.decode(session);
-    const a = token.USER.id;
-
+    const id = token.USER.id;
     const result = await prisma.commands.findMany({
       where: {
-        user_id: parseInt(a),
+        user_id: parseInt(id),
       },
     });
-
     return {
       props: {
-        products: result ? result : null,
+        products: result.length != 0 ? result : null,
       },
     };
   }
