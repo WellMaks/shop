@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { saveToken } from "../components/SaveToken";
-import { getToken, isTokenExist } from "../components/GetToken";
-import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/action-creators";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { getCookie, setCookies } from "cookies-next";
