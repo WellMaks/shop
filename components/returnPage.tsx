@@ -1,4 +1,4 @@
-import { prisma } from "../components/prisma";
+import { prisma } from "./prisma";
 
 async function returnPage() {
   const posts = await prisma.product.findMany({

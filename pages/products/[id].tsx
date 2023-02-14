@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "../../components/prisma";
-import returnPage from "../returnPage";
+import returnPage from "../../components/returnPage";
 import getStripe from "../../components/GetStripe";
 
 const ProductPage = (props: { product: any }) => {
