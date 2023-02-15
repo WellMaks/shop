@@ -24,7 +24,8 @@
     "pages/_app.tsx",
     "pages/index.tsx",
     "components/localstorage.jsx",
-    "components/Session.jsx"
+    "components/Session.jsx",
+    "pages/api/stripe-webhook.tsx"
   ],
   "exclude": ["node_modules"]
 }
