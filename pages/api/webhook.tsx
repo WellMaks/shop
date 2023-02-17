@@ -1,33 +1,61 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
+import { buffer } from "micro";
+import { prisma } from "../../components/prisma";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
   apiVersion: "2022-11-15",
 });
 
-export default async function handleStripeWebhook(
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const sig = req.headers["stripe-signature"] as string;
-  let event;
+  console.log("Payment intent");
 
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch (err: any) {
-    console.error(err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+  let event = req.body;
+  // console.log(event);
+
+  if (process.env.STRIPE_WEBHOOK_SECRET!) {
+    // Get the signature sent by Stripe
+    const signature = req.headers["stripe-signature"];
+    const buf = await buffer(req);
+    console.log(signature);
+    try {
+      event = stripe.webhooks.constructEvent(
+        buf,
+        signature!,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      );
+    } catch (err: any) {
+      console.log(`⚠️  Webhook signature verification failed.`, err.message);
+      return res.status(400);
+    }
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    // Handle successful checkout session here, e.g. fulfill the order, send confirmation email, etc.
-    console.log("Checkout session completed:", session.id);
-  }
+  // console.log(event.type);
+  // console.log(event.data.object.metadata);
 
-  res.json({ received: true });
+  // Handle the event
+  switch (event.type) {
+    case "checkout.session.completed":
+      console.log("Success!");
+      const data: any = {
+        user_id: 4,
+        product: JSON.parse(event.data.object.metadata.data),
+        status: "Package preparing",
+      };
+      const createPost = await prisma.commands.create({
+        data,
+      });
+      break;
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
 }

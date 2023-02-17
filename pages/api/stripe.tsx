@@ -33,7 +33,7 @@ export default async function handler(req: any, res: any) {
           },
         ],
 
-        success_url: `${req.headers.origin}/next?success=true&session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${req.headers.origin}/next?success=true`,
         cancel_url: `${req.headers.origin}/?canceled=true`,
       } as any;
       // Create Checkout Sessions from body params.

@@ -10,9 +10,7 @@ const Home = (props: { products: any }) => {
   const isLoggedIn = useAppSelector((state: any) => state.isLoggedIn);
   const href = isLoggedIn ? "/shop" : "/loginPage";
   const products = props.products === null ? false : true;
-  if (isLoggedIn) {
-    localStorage.setItem("saved", "no");
-  }
+
   return (
     <>
       <div className=" py-10 px-12">
