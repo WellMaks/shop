@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import jwt from "jsonwebtoken";
 import { prisma } from "../../components/prisma";
 
+// const KEY = process.env.JWT_SECRET;
 const KEY = "123";
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
@@ -30,7 +31,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       {
         USER,
       },
-      KEY
+      KEY!
     ),
   });
 }

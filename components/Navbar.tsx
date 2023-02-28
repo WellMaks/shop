@@ -18,6 +18,15 @@ const Navbar = () => {
     }
   });
 
+  try {
+    const cookie: any = getCookie("token");
+    const decoded = jwt.verify(cookie, "123");
+  } catch (err) {
+    console.log(err);
+    console.log("Invalid token");
+    dispatch(logoutUser());
+  }
+
   return (
     <nav className="font-sans flex flex-col text-center sm:flex-row sm:text-left sm:justify-between py-4 px-6 bg-white shadow sm:items-baseline w-full ">
       <Link href="/" legacyBehavior className="mb-2 sm:mb-0">
