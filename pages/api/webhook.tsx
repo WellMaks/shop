@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { buffer } from "micro";
 import { prisma } from "../../components/prisma";
+import cookie from "cookie";
+import jwt from "jsonwebtoken";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
   apiVersion: "2022-11-15",
@@ -41,13 +43,15 @@ export default async function handler(
 
   // console.log(event.type);
   // console.log(event.data.object.metadata);
+  // console.log(event.data.object);
 
   // Handle the event
   switch (event.type) {
     case "checkout.session.completed":
       console.log("Success!");
+      // console.log("token: " + id);
       const data: any = {
-        user_id: 4,
+        user_id: JSON.parse(event.data.object.metadata.user_data),
         product: JSON.parse(event.data.object.metadata.data),
         status: "Package preparing",
       };

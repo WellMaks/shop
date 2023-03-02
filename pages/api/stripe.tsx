@@ -1,16 +1,23 @@
 import Stripe from "stripe";
+import cookie from "cookie";
+import jwt from "jsonwebtoken";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
   apiVersion: "2022-11-15",
 });
 
 export default async function handler(req: any, res: any) {
+  const cookies = cookie.parse(req.headers.cookie || "");
+  const token = cookies.token;
+  const decoded: any = jwt.decode(token);
+  const id = decoded.USER.id;
   if (req.method === "POST") {
     try {
       const product = req.body;
       const params = {
         metadata: {
           data: JSON.stringify(req.body),
+          user_data: id,
         },
         submit_type: "pay",
         mode: "payment",
