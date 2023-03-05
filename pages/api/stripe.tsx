@@ -7,10 +7,19 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
 });
 
 export default async function handler(req: any, res: any) {
-  const cookies = cookie.parse(req.headers.cookie || "");
-  const token = cookies.token;
-  const decoded: any = jwt.decode(token);
-  const id = decoded.USER.id;
+  let id;
+  try {
+    const cookies = cookie.parse(req.headers.cookie || "");
+    const token = cookies.token;
+    const verify = jwt.verify(token, "123");
+    const decoded: any = jwt.decode(token);
+    id = decoded.USER.id;
+  } catch (err) {
+    console.log(err);
+    console.log("Invalid token");
+    return;
+  }
+
   if (req.method === "POST") {
     try {
       const product = req.body;
